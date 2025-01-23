@@ -18,6 +18,7 @@ func _cancel()->void:
 
 func _end()->void:
 	is_active = false
+
 #func _notification(what: int) -> void:
 	#if what == NOTIFICATION_PREDELETE:
 		#print("task deleted")

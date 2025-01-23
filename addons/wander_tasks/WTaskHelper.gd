@@ -3,13 +3,6 @@ extends Node
 var _incrementer : int = 0
 
 #region callable coroutines
-func sync_callables_task(callables : Array[Callable])->WTask_SyncCallables:
-	var sync_task := WTask_SyncCallables.new()
-	sync_task.callables = callables
-	sync_task._start.call_deferred() #defer start in case callables immediately return
-	await sync_task.on_complete
-	return sync_task
-
 func sync_callables(callables : Array[Callable])->Array:
 	var current_increment := str(_increment())
 	
@@ -32,13 +25,6 @@ func sync_callables(callables : Array[Callable])->Array:
 	await on_complete
 	remove_user_signal(current_increment)
 	return return_values
-
-func race_callables_task(callables : Array[Callable])->WTask_RaceCallables:
-	var race_task := WTask_RaceCallables.new()
-	race_task.callables = callables
-	race_task._start.call_deferred()
-	await race_task.on_complete
-	return race_task
 
 func race_callables(callables : Array[Callable])->Variant:
 	var current_increment := str(_increment())
@@ -71,7 +57,6 @@ func call_delayed(callable : Callable, delay : float, args : Array = [])->Varian
 	else:
 		await get_tree().create_timer(delay).timeout
 		return await callable.callv(args)
-
 #endregion
 
 #region signal coroutines
@@ -98,7 +83,7 @@ func sync_signals(signals : Array[Signal])->Array:
 	remove_user_signal(current_increment)
 	return return_values
 
-func race_signals(signals : Array[Signal])->Array:
+func race_signals(signals : Array[Signal])->Variant:
 	var current_increment := str(_increment())
 	
 	var on_complete := Signal(self, current_increment)
@@ -114,7 +99,6 @@ func race_signals(signals : Array[Signal])->Array:
 	var return_value : Variant = await on_complete
 	remove_user_signal(current_increment)
 	return return_value
-
 #endregion
 
 func _increment()->int:
